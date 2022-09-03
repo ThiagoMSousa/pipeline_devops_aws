@@ -14,7 +14,7 @@ public class PipelineDevopsAwsApp {
         VpcStack vpcStack = new VpcStack(app, "Vpc");
 
         // Criando o Cluster atrelando a VPC
-        ClusterStack clusterStack = new ClusterStack((app, "Cluster", vpcStack.getVpc());
+        ClusterStack clusterStack = new ClusterStack(app, "Cluster", vpcStack.getVpc());
 
         // Colocando dependencia da Criação da VPC para depois criar o Cluster
         clusterStack.addDependency(vpcStack);
