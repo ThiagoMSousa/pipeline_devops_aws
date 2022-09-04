@@ -1,9 +1,6 @@
 package com.myorg;
 
-import software.amazon.awscdk.CfnParameter;
-import software.amazon.awscdk.SecretValue;
-import software.amazon.awscdk.Stack;
-import software.amazon.awscdk.StackProps;
+import software.amazon.awscdk.*;
 import software.amazon.awscdk.services.ec2.*;
 import software.amazon.awscdk.services.rds.*;
 import software.constructs.Construct;
@@ -66,6 +63,19 @@ public class RdsStack extends Stack {
                 .vpcSubnets(SubnetSelection.builder()
                         .subnets(vpc.getPrivateSubnets())
                         .build())
+                .build();
+
+        // Exportando Paramêtros para utilização em outros serviços/stack
+        // Exportação do Nome da Instância do Banco de Dados
+        CfnOutput.Builder.create(this, "rds-endpoint")
+                .exportName("rds-endpoint")
+                .value(databaseInstance.getDbInstanceEndpointAddress())
+                .build();
+
+        // Exportação da Senha da Instância do Banco de Dados
+        CfnOutput.Builder.create(this, "rds-password")
+                .exportName("rds-password")
+                .value(databasePassword.getValueAsString())
                 .build();
     }
 }
