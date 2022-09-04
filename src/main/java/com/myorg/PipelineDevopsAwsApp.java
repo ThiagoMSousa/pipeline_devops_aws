@@ -19,6 +19,10 @@ public class PipelineDevopsAwsApp {
         // Colocando dependencia da Criação da VPC para depois criar o Cluster
         clusterStack.addDependency(vpcStack);
 
+        Service01Stack service01Stack = new Service01Stack(app, "Service01", clusterStack.getCluster());
+        service01Stack.addDependency(clusterStack);
+
+
         app.synth();
     }
 }

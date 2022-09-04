@@ -9,6 +9,9 @@ import software.constructs.Construct;
 // import software.amazon.awscdk.services.sqs.Queue;
 
 public class ClusterStack extends Stack {
+
+    private Cluster cluster;
+
     public ClusterStack(final Construct scope, final String id, Vpc vpc) {
         this(scope, id, null, vpc);
     }
@@ -20,5 +23,9 @@ public class ClusterStack extends Stack {
                 .clusterName("cluster-01")
                 .vpc(vpc)
                 .build();
+    }
+
+    public Cluster getCluster() {
+        return cluster;
     }
 }
