@@ -17,7 +17,7 @@ public class VpcStack extends Stack {
         super(scope, id, props);
 
         vpc = Vpc.Builder.create(this, "Vpc01")
-                .maxAzs(1)
+                .maxAzs(2)
                 .natGateways(0)
                 .build();
     }

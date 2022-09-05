@@ -34,7 +34,7 @@ public class RdsStack extends Stack {
         DatabaseInstance databaseInstance = DatabaseInstance.Builder
                 .create(this, "Rds01")
                 // Definindo o Nome de Identificação da Instância
-                .instanceIdentifier("catalogo_produtos-db")
+                .instanceIdentifier("catalogo-produtos-db")
                 // Definindo o Tipo e a Versão da Instancia
                 .engine(DatabaseInstanceEngine.mysql(MySqlInstanceEngineProps.builder()
                                 .version(MysqlEngineVersion.VER_8_0_28)
@@ -61,7 +61,10 @@ public class RdsStack extends Stack {
                 .securityGroups(Collections.singletonList(iSecurityGroup))
                 // Definindo quais são as Sub-redes dentro da minha instância.
                 .vpcSubnets(SubnetSelection.builder()
-                        .subnets(vpc.getPrivateSubnets())
+                        // O ideial é colocar .getPrivateSubnets
+                        // Deixado .getPublicSubnets devido à redução de custos
+                        // Por conta do parametro .natGateways(0)
+                        .subnets(vpc.getPublicSubnets())
                         .build())
                 .build();
 

@@ -29,7 +29,7 @@ public class Service01Stack extends Stack {
 
         // String de Conexão do Banco de Dados
         envVariables.put("SPRING_DATASOURCE_URL", "jdbc:mariadb://" + Fn.importValue("rds-endpoint")
-        + ":3306/catalogo_produtos?createDatabaseIfNotExist=true");
+        + ":3306/catalogo-produtos?createDatabaseIfNotExist=true");
         // String do Usuário de acesso
         envVariables.put("SPRING_DATASOURCE_USERNAME", "admin");
         // String da Password de acesso
@@ -45,7 +45,7 @@ public class Service01Stack extends Stack {
                 .assignPublicIp(true)
                 .taskImageOptions(
                         ApplicationLoadBalancedTaskImageOptions.builder()
-                                .containerName("aws_project01")
+                                .containerName("catalogo_produtos")
                                 .image(ContainerImage.fromRegistry("thiagomdes/catalogo_produtos:1.0.1"))
                                 .containerPort(8080)
                                 .logDriver(LogDriver.awsLogs(AwsLogDriverProps.builder()
@@ -58,7 +58,6 @@ public class Service01Stack extends Stack {
                                         .build()))
                                 .environment(envVariables)
                                 .build())
-
                 .publicLoadBalancer(true)
                 .build();
 

@@ -26,7 +26,7 @@ public class PipelineDevopsAwsApp {
         // Criando a Stack do Service01Stack
         Service01Stack service01Stack = new Service01Stack(app, "Service01", clusterStack.getCluster());
         service01Stack.addDependency(clusterStack);
-        
+        service01Stack.addDependency(rdsStack);
         app.synth();
     }
 }
