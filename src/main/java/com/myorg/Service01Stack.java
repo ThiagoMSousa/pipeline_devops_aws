@@ -46,7 +46,7 @@ public class Service01Stack extends Stack {
                 .taskImageOptions(
                         ApplicationLoadBalancedTaskImageOptions.builder()
                                 .containerName("catalogo_produtos")
-                                .image(ContainerImage.fromRegistry("thiagomdes/catalogo_produtos:1.0.1"))
+                                .image(ContainerImage.fromRegistry("thiagomdes/catalogo_produtos:1.0.2"))
                                 .containerPort(8080)
                                 .logDriver(LogDriver.awsLogs(AwsLogDriverProps.builder()
                                         .logGroup(LogGroup.Builder.create(this,
