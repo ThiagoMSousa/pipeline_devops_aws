@@ -22,6 +22,8 @@ public class PipelineDevopsAwsApp {
         RdsStack rdsStack = new RdsStack(app, "Rds", vpcStack.getVpc());
         rdsStack.addDependency(vpcStack);
 
+        // Criando o SNS
+        SnsStack snsStack = new SnsStack(app, "Sns");
 
         // Criando a Stack do Service01Stack
         Service01Stack service01Stack = new Service01Stack(app, "Service01", clusterStack.getCluster());
