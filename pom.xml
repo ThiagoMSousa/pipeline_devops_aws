@@ -32,7 +32,7 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.0.0</version>
                 <configuration>
-                    <mainClass>com.myorg.PipelineDevopsAwsApp</mainClass>
+                    <mainClass>br.com.dev.thiagomds.infra_aws_catalogo_produtos.PipelineDevopsAwsApp</mainClass>
                 </configuration>
             </plugin>
         </plugins>

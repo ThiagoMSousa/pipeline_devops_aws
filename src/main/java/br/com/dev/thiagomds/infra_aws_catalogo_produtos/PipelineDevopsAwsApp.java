@@ -1,10 +1,6 @@
-package com.myorg;
+package br.com.dev.thiagomds.infra_aws_catalogo_produtos;
 
 import software.amazon.awscdk.App;
-import software.amazon.awscdk.Environment;
-import software.amazon.awscdk.StackProps;
-
-import java.util.Arrays;
 
 public class PipelineDevopsAwsApp {
     public static void main(final String[] args) {

@@ -1,4 +1,4 @@
-package com.myorg;
+package br.com.dev.thiagomds.infra_aws_catalogo_produtos;
 
 import software.amazon.awscdk.*;
 import software.amazon.awscdk.services.ec2.*;
@@ -46,7 +46,7 @@ public class RdsStack extends Stack {
                 .credentials(Credentials.fromUsername("admin",
                         CredentialsFromUsernameOptions.builder()
                                 // Pegando a Senha através do Parameter
-                                .password(SecretValue.plainText(databasePassword.getValueAsString()))
+                                .password(SecretValue.unsafePlainText(databasePassword.getValueAsString()))
                                 .build()))
                 // Definindo o tamanho da máquina que irá executar a instância
                 .instanceType(InstanceType.of(InstanceClass.BURSTABLE2, InstanceSize.MICRO))

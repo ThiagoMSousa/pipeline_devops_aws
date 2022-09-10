@@ -1,4 +1,4 @@
-package com.myorg;
+package br.com.dev.thiagomds.infra_aws_catalogo_produtos;
 
 import software.amazon.awscdk.Fn;
 import software.amazon.awscdk.RemovalPolicy;
