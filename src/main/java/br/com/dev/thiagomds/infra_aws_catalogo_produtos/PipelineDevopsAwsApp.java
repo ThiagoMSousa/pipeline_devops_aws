@@ -21,7 +21,7 @@ public class PipelineDevopsAwsApp {
         // Criando o SNS
         SnsStack snsStack = new SnsStack(app, "Sns");
 
-        // Criando a Stack do Service01Stack
+        // Criando a Stack do Service01Stack referente aos serviços do "Catalogo de Produtos"
         Service01Stack service01Stack = new Service01Stack(
                 app,
                 "Service01",
@@ -32,9 +32,11 @@ public class PipelineDevopsAwsApp {
         service01Stack.addDependency(snsStack);
 
 
+        // Criando a Stack do Service02Stack referente aos serviços do "Consumer Catalogo de Produtos"
         Service02Stack service02Stack = new Service02Stack(app,
                 "Service02",
                 clusterStack.getCluster(), snsStack.getProductEventsTopic());
+        service02Stack.addDependency(clusterStack);
         service02Stack.addDependency(snsStack);
         app.synth();
     }

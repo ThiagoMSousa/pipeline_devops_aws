@@ -72,7 +72,7 @@ public class Service02Stack extends Stack {
                 .taskImageOptions(
                         ApplicationLoadBalancedTaskImageOptions.builder()
                                 .containerName("consumer_catalogo_produtos")
-                                .image(ContainerImage.fromRegistry("thiagomdes/consumer_catalogo_produtos:1.0.0"))
+                                .image(ContainerImage.fromRegistry("thiagomdes/consumer_catalogo_produtos:1.0.1"))
                                 .containerPort(9090)
                                 .logDriver(LogDriver.awsLogs(AwsLogDriverProps.builder()
                                         .logGroup(LogGroup.Builder.create(this,
@@ -93,5 +93,8 @@ public class Service02Stack extends Stack {
                 .port("9090")
                 .healthyHttpCodes("200")
                 .build());
+
+        // Atribuindo permissão ao Service para consumo das mensagens da Fila
+        productEventsQueue.grantConsumeMessages(service02.getTaskDefinition().getTaskRole());
     }
 }
