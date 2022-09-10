@@ -13,6 +13,9 @@ import software.amazon.awscdk.services.ecs.patterns.ApplicationLoadBalancedTaskI
 import software.amazon.awscdk.services.elasticloadbalancingv2.HealthCheck;
 import software.amazon.awscdk.services.events.targets.SnsTopic;
 import software.amazon.awscdk.services.logs.LogGroup;
+import software.amazon.awscdk.services.sns.subscriptions.SqsSubscription;
+import software.amazon.awscdk.services.sqs.DeadLetterQueue;
+import software.amazon.awscdk.services.sqs.Queue;
 import software.constructs.Construct;
 
 import java.util.HashMap;
@@ -21,12 +24,33 @@ import java.util.Map;
 // import software.amazon.awscdk.services.sqs.Queue;
 
 public class Service02Stack extends Stack {
-    public Service02Stack(final Construct scope, final String id, Cluster cluster) {
-        this(scope, id, null, cluster);
+    public Service02Stack(final Construct scope, final String id, Cluster cluster, SnsTopic productEventsTopic) {
+        this(scope, id, null, cluster, productEventsTopic);
     }
 
-    public Service02Stack(final Construct scope, final String id, final StackProps props, Cluster cluster) {
+    public Service02Stack(final Construct scope, final String id, final StackProps props, Cluster cluster, SnsTopic productEventsTopic) {
         super(scope, id, props);
+
+
+        // Criando a Fila
+        Queue productEventsDlq = Queue.Builder.create(this, "ProductEventsDlq")
+                .queueName("product-events-dlq")
+                .build();
+
+        // Criando a Fila DLQ
+        DeadLetterQueue deadLetterQueue = DeadLetterQueue.builder()
+                .queue(productEventsDlq) // Nome da Fila de Leitura para DLQ
+                .maxReceiveCount(3) // Definindo a quantidade máxima de tentativas para evoluir para DLQ
+                .build();
+
+        Queue productEventsQueue = Queue.Builder.create(this, "ProductEvents")
+                .queueName("product-events")
+                .deadLetterQueue(deadLetterQueue)
+                .build();
+
+        // Escrevendo a FILA no Tópico
+        SqsSubscription sqsSubscription = SqsSubscription.Builder.create(productEventsQueue).build();
+        productEventsTopic.getTopic().addSubscription(sqsSubscription);
 
         // Definindo Variáveis de Ambiente
         Map<String, String> envVariables = new HashMap<>();
@@ -34,6 +58,8 @@ public class Service02Stack extends Stack {
         // Região da AWS
         envVariables.put("AWS_REGION", "us-east-1");
 
+        // Nome da Fila
+        envVariables.put("AWS_SQS_QUEUE_PRODUCT_EVENTS_NAME", productEventsQueue.getQueueName());
 
         ApplicationLoadBalancedFargateService service02 = ApplicationLoadBalancedFargateService.Builder.create(this, "ALB_consumer_catalogo_produto")
                 .serviceName("service-02")

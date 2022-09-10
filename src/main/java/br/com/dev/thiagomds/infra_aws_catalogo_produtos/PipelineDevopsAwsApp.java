@@ -34,7 +34,8 @@ public class PipelineDevopsAwsApp {
 
         Service02Stack service02Stack = new Service02Stack(app,
                 "Service02",
-                clusterStack.getCluster());
+                clusterStack.getCluster(), snsStack.getProductEventsTopic());
+        service02Stack.addDependency(snsStack);
         app.synth();
     }
 }
