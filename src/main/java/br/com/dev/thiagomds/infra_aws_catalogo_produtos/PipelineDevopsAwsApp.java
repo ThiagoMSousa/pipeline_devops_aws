@@ -31,13 +31,17 @@ public class PipelineDevopsAwsApp {
         service01Stack.addDependency(rdsStack);
         service01Stack.addDependency(snsStack);
 
+        DynamoDbStack dynamoDbStack = new DynamoDbStack(app, "DynamoDb");
 
         // Criando a Stack do Service02Stack referente aos serviços do "Consumer Catalogo de Produtos"
         Service02Stack service02Stack = new Service02Stack(app,
                 "Service02",
-                clusterStack.getCluster(), snsStack.getProductEventsTopic());
+                clusterStack.getCluster(),
+                snsStack.getProductEventsTopic(),
+                dynamoDbStack.getProductEventDynamoDb());
         service02Stack.addDependency(clusterStack);
         service02Stack.addDependency(snsStack);
+        service02Stack.addDependency(dynamoDbStack);
         app.synth();
     }
 }

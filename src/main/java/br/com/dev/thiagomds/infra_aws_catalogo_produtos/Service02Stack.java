@@ -4,6 +4,7 @@ import software.amazon.awscdk.Fn;
 import software.amazon.awscdk.RemovalPolicy;
 import software.amazon.awscdk.Stack;
 import software.amazon.awscdk.StackProps;
+import software.amazon.awscdk.services.dynamodb.Table;
 import software.amazon.awscdk.services.ecs.AwsLogDriverProps;
 import software.amazon.awscdk.services.ecs.Cluster;
 import software.amazon.awscdk.services.ecs.ContainerImage;
@@ -24,11 +25,20 @@ import java.util.Map;
 // import software.amazon.awscdk.services.sqs.Queue;
 
 public class Service02Stack extends Stack {
-    public Service02Stack(final Construct scope, final String id, Cluster cluster, SnsTopic productEventsTopic) {
-        this(scope, id, null, cluster, productEventsTopic);
+    public Service02Stack(final Construct scope,
+                          final String id,
+                          Cluster cluster,
+                          SnsTopic productEventsTopic,
+                          Table productEventsDynamoDb) {
+        this(scope, id, null, cluster, productEventsTopic, productEventsDynamoDb);
     }
 
-    public Service02Stack(final Construct scope, final String id, final StackProps props, Cluster cluster, SnsTopic productEventsTopic) {
+    public Service02Stack(final Construct scope,
+                          final String id,
+                          final StackProps props,
+                          Cluster cluster,
+                          SnsTopic productEventsTopic,
+                          Table productEventsDynamoDb) {
         super(scope, id, props);
 
 
@@ -72,7 +82,7 @@ public class Service02Stack extends Stack {
                 .taskImageOptions(
                         ApplicationLoadBalancedTaskImageOptions.builder()
                                 .containerName("consumer_catalogo_produtos")
-                                .image(ContainerImage.fromRegistry("thiagomdes/consumer_catalogo_produtos:1.0.1"))
+                                .image(ContainerImage.fromRegistry("thiagomdes/consumer_catalogo_produtos:1.0.2"))
                                 .containerPort(9090)
                                 .logDriver(LogDriver.awsLogs(AwsLogDriverProps.builder()
                                         .logGroup(LogGroup.Builder.create(this,
@@ -96,5 +106,8 @@ public class Service02Stack extends Stack {
 
         // Atribuindo permissão ao Service para consumo das mensagens da Fila
         productEventsQueue.grantConsumeMessages(service02.getTaskDefinition().getTaskRole());
+
+        // Definindo Permissão de Leitura e Escrita na Tabela DynamoDB
+        productEventsDynamoDb.grantReadWriteData(service02.getTaskDefinition().getTaskRole());
     }
 }
