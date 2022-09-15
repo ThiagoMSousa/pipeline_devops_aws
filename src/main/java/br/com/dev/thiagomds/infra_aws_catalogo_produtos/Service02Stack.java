@@ -60,7 +60,7 @@ public class Service02Stack extends Stack {
 
         // Escrevendo a FILA no Tópico
         SqsSubscription sqsSubscription = SqsSubscription.Builder.create(productEventsQueue).build();
-        productEventsTopic.getTopic().addSubscription(sqsSubscription);
+            productEventsTopic.getTopic().addSubscription(sqsSubscription);
 
         // Definindo Variáveis de Ambiente
         Map<String, String> envVariables = new HashMap<>();
@@ -82,7 +82,7 @@ public class Service02Stack extends Stack {
                 .taskImageOptions(
                         ApplicationLoadBalancedTaskImageOptions.builder()
                                 .containerName("consumer_catalogo_produtos")
-                                .image(ContainerImage.fromRegistry("thiagomdes/consumer_catalogo_produtos:1.0.2"))
+                                .image(ContainerImage.fromRegistry("thiagomdes/consumer_catalogo_produtos:1.0.3"))
                                 .containerPort(9090)
                                 .logDriver(LogDriver.awsLogs(AwsLogDriverProps.builder()
                                         .logGroup(LogGroup.Builder.create(this,
