@@ -23,11 +23,13 @@ public class DynamoDbStack extends Stack {
                 // Definindo o Nome da Tabela
                 .tableName("product-events")
                 // Definindo o Modelo de Provisionamento
-                .billingMode(BillingMode.PROVISIONED)
+                // BillingMode -> PAY_PER_REQUEST = Sob-demanda
+                //             -> PROVISIONED = Provisionada
+                .billingMode(BillingMode.PAY_PER_REQUEST)
                 // Definindo a Capacidade de Leitura
-                .readCapacity(1)
+                //.readCapacity(1)  // Somente no Modelo PROVISIONED
                 // Definindo a Capacidade Escrita
-                .writeCapacity(1)
+                //.writeCapacity(1)  // Somente no Modelo PROVISIONED
                 // Definindo o Campo de Partition Key
                 .partitionKey(Attribute.builder()
                         .name("pk")
@@ -44,6 +46,9 @@ public class DynamoDbStack extends Stack {
                 .removalPolicy(RemovalPolicy.DESTROY)
                 .build();
 
+        // OBSERVAÇÃO
+        // AUTO-SCALING somente no MODO PROVISIONADO (PROVISIONED)
+        /*
         // Configurando Auto-Scaling da CAPACIDADE DE LEITURA
         productEventDynamoDb.autoScaleReadCapacity(EnableScalingProps.builder()
                         // Capacidade Minima
@@ -78,6 +83,7 @@ public class DynamoDbStack extends Stack {
                         // Tempo Inicial na qual o Auto-Scaling permanecerá DESLIGADO
                         .scaleOutCooldown(Duration.seconds(30))
                         .build());
+         */
     }
 
     public Table getProductEventDynamoDb() {
