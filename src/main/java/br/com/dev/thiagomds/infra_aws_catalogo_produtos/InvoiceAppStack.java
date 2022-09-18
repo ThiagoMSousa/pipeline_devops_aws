@@ -40,7 +40,7 @@ public class InvoiceAppStack extends Stack {
         bucket = Bucket.Builder.create(this, "S301")
                 // Atribuindo Nome ao Bucket
                 // O nome deve ser único na region
-                .bucketName("pcs01-invoice")
+                .bucketName("pcs-invoice")
                 // Define se a Stack for Deletada, o que fazer com o Bucket S3
                 // Neste exemplo, DESTRÓI o BUCKET
                 .removalPolicy(RemovalPolicy.DESTROY)

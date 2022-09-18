@@ -21,12 +21,17 @@ public class PipelineDevopsAwsApp {
         // Criando o SNS
         SnsStack snsStack = new SnsStack(app, "Sns");
 
+        // Criando a Stack do Invoice
+        InvoiceAppStack invoiceAppStack = new InvoiceAppStack(app, "InvoiceApp");
+
         // Criando a Stack do Service01Stack referente aos serviços do "Catalogo de Produtos"
         Service01Stack service01Stack = new Service01Stack(
                 app,
                 "Service01",
                 clusterStack.getCluster(),
-                snsStack.getProductEventsTopic());
+                snsStack.getProductEventsTopic(),
+                invoiceAppStack.getBucket(),
+                invoiceAppStack.getS3InvoiceQueue());
         service01Stack.addDependency(clusterStack);
         service01Stack.addDependency(rdsStack);
         service01Stack.addDependency(snsStack);

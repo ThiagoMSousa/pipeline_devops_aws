@@ -10,6 +10,8 @@ import software.amazon.awscdk.services.ecs.patterns.ApplicationLoadBalancedTaskI
 import software.amazon.awscdk.services.elasticloadbalancingv2.HealthCheck;
 import software.amazon.awscdk.services.events.targets.SnsTopic;
 import software.amazon.awscdk.services.logs.LogGroup;
+import software.amazon.awscdk.services.s3.Bucket;
+import software.amazon.awscdk.services.sqs.Queue;
 import software.constructs.Construct;
 
 import java.util.HashMap;
@@ -18,11 +20,22 @@ import java.util.Map;
 // import software.amazon.awscdk.services.sqs.Queue;
 
 public class Service01Stack extends Stack {
-    public Service01Stack(final Construct scope, final String id, Cluster cluster, SnsTopic productEventsTopic) {
-        this(scope, id, null, cluster, productEventsTopic);
+    public Service01Stack(final Construct scope,
+                          final String id,
+                          Cluster cluster,
+                          SnsTopic productEventsTopic,
+                          Bucket invoiceBucket,
+                          Queue invoiceQueue) {
+        this(scope, id, null, cluster, productEventsTopic, invoiceBucket, invoiceQueue);
     }
 
-    public Service01Stack(final Construct scope, final String id, final StackProps props, Cluster cluster, SnsTopic productEventsTopic) {
+    public Service01Stack(final Construct scope,
+                          final String id,
+                          final StackProps props,
+                          Cluster cluster,
+                          SnsTopic productEventsTopic,
+                          Bucket invoiceBucket,
+                          Queue invoiceQueue) {
         super(scope, id, props);
 
         // Definindo Variáveis de Ambiente
@@ -37,8 +50,14 @@ public class Service01Stack extends Stack {
         envVariables.put("SPRING_DATASOURCE_PASSWORD", Fn.importValue("rds-password"));
         // Região da AWS
         envVariables.put("AWS_REGION", "us-east-1");
-        // ARNdo Tópico SNS
+        // ARN do Tópico SNS
         envVariables.put("AWS_SNS_TOPIC_PRODUCT_EVENTS_ARN", productEventsTopic.getTopic().getTopicArn());
+        // Nome do Bucket
+        envVariables.put("AWS_S3_INVOICE_NAME", invoiceBucket.getBucketName());
+        // Nome da Fila
+        envVariables.put("AWS_SQS_QUEUE_INVOICE_NAME", invoiceQueue.getQueueName());
+
+
 
         ApplicationLoadBalancedFargateService service01 = ApplicationLoadBalancedFargateService.Builder.create(this, "ALB01")
                 .serviceName("service-01")
@@ -51,7 +70,7 @@ public class Service01Stack extends Stack {
                 .taskImageOptions(
                         ApplicationLoadBalancedTaskImageOptions.builder()
                                 .containerName("catalogo_produtos")
-                                .image(ContainerImage.fromRegistry("thiagomdes/catalogo_produtos:1.0.8"))
+                                .image(ContainerImage.fromRegistry("thiagomdes/catalogo_produtos:1.0.9"))
                                 .containerPort(8080)
                                 .logDriver(LogDriver.awsLogs(AwsLogDriverProps.builder()
                                         .logGroup(LogGroup.Builder.create(this,
@@ -76,5 +95,11 @@ public class Service01Stack extends Stack {
         // Dando a permissão de publicar mensagens, a partir da TaskRole da Task Definition
         productEventsTopic.getTopic().grantPublish(service01.getTaskDefinition().getTaskRole());
 
+        // Dando a permissão para consumir mensagem da Fila
+        invoiceQueue.grantConsumeMessages(service01.getTaskDefinition().getTaskRole());
+
+        // Dando permissão de Leitura e Escrita no Bucket
+        // Dado que vai ler o arquivo, e consequentemente apagar o mesmo
+        invoiceBucket.grantReadWrite(service01.getTaskDefinition().getTaskRole());
     }
 }
